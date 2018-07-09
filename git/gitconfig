@@ -1,0 +1,9 @@
+#Example $HOME/.gitconfig to enforce signing
+[commit]
+    gpgsign = true
+[gpg]
+    program = gpg
+[user]
+    name = My Name
+    email = emailaddress@example.com
+    signingkey = <key id from scripts/print-key-id.sh>

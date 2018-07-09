@@ -1,0 +1,47 @@
+#!/bin/bash
+reader_port=
+old_code=0x0000
+new_code=0x0000
+status=
+
+PATH=$PATH:/usr/local/MacGPG2/bin
+OPTS=`getopt --long reader-port,old-code,new-code,status: -n 'parse-options' -- "$@"`
+
+if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
+
+while true; do
+    case "$1" in
+        --reader-port )  reader_port=$2  ; shift 2 ;;
+        --old-code )     old_code=$2     ; shift 2 ;;
+        --new-code )     new_code=$2     ; shift 2 ;;
+        --status )       status=$2       ; shift 2 ;;
+        * ) break ;;
+    esac
+done
+
+cat <<EOF
+========================
+port:     $reader_port
+old-code: $old_code
+new-code: $new_code
+status:   $status
+EOF
+
+case $status in
+    NOCARD)
+        # Drop gpg-agent password cache
+        echo RELOADAGENT | gpg-connect-agent
+        # Start macOS Screensaver
+        open /System/Library/CoreServices/ScreenSaverEngine.app
+        # Full macOS logout
+        # "/System/Library/CoreServices/Menu Extras/User.menu/Contents/Resources/CGSession" -suspend
+        ;;
+    PRESENT)
+        # Updates the display for PIN prompts on insert
+        echo UPDATESTARTUPTTY | gpg-connect-agent
+        ;;
+    *)
+        exit 0
+        ;;
+esac
+
