@@ -216,7 +216,7 @@ export SSH_AUTH_SOCK=$GPG_AGENT_SOCK
 
 1. Disable openssh-agent from loading if needed:
 
-   - **macOS users** You may need to disable the system ssh-agent. On older macOS: `sudo launchctl unload -w /System/Library/LaunchAgents/com.openssh.ssh-agent.plist`. On modern macOS (Ventura+), the system ssh-agent is managed differently -- setting `SSH_AUTH_SOCK` to the GPG agent socket (as shown above) is usually sufficient.
+   - **macOS users** Setting `SSH_AUTH_SOCK` to the GPG agent socket (as shown above) is usually sufficient. The system ssh-agent does not need to be explicitly disabled.
    - **Linux users** You may need to disable the password / ssh management agent on your desktop, for gnome follow [these instructions](https://wiki.archlinux.org/index.php/GNOME/Keyring#Disable_keyring_daemon_components)  
 
 1. Import your SSH key into GitLab/Hub/Tea

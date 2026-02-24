@@ -35,15 +35,13 @@
 
     Using the ssh agent method means that you will not need to type your PIN when you connect to an SSH server but you will still need to press the button to confirm your presence. The downside to this method is that you will need to remove and readd your yubikey to the ssh agent when you remove the key or restart your laptop.
 
-    * OpenSC users: `ssh-add -s /Library/OpenSC/lib/opensc-pkcs11.so`
-    * Homebrew users: `ssh-add -s $(brew --prefix opensc)/lib/opensc-pkcs11.so`
+    * `ssh-add -s $(brew --prefix opensc)/lib/opensc-pkcs11.so`
 
     To remove change the -s flag to -e 
 
     Adding the PKCS11 provider to your ssh config (`$HOME/.ssh/config`) will cause ssh to automatically load the keys as needed however it will prompt for a PIN on every connection.
 
-    * OpenSC users: `PKCS11Provider /Library/OpenSC/lib/opensc-pkcs11.so` to `$HOME/.ssh/config`
-    * Homebrew users: `PKCS11Provider /usr/local/opt/opensc/lib/opensc-pkcs11.so` to `$HOME/.ssh/config`
+    * Add `PKCS11Provider /opt/homebrew/opt/opensc/lib/opensc-pkcs11.so` to `$HOME/.ssh/config`
 
 ### Changing your PIN ###
 

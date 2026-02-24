@@ -2,8 +2,6 @@
 # Called by scdaemon on YubiKey state changes.
 # Arguments: scd-event --reader-port <port> --old-code <code> --new-code <code> --status <status>
 
-PATH=$PATH:/usr/local/MacGPG2/bin
-
 reader_port=""
 old_code="0x0000"
 new_code="0x0000"

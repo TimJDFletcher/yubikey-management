@@ -26,17 +26,27 @@ Covers GPG key generation (on-card), PIV-based SSH/VPN keys, git commit signing,
 - PIV slots: 9a (VPN/authentication), 9e (SSH/card auth)
 - GPG SSH support works via `gpg-agent` with `enable-ssh-support`
 - Scripts assume macOS primarily; some Linux support (Ubuntu/Debian)
-- Apple Silicon Homebrew path: `/opt/homebrew/bin/`; Intel: `/usr/local/bin/`
+- All Macs are Apple Silicon; Homebrew prefix is `/opt/homebrew/`
 - `scd-event` is called by scdaemon on YubiKey insert/removal events
+- `gpg-agent.conf` has pinentry-mac enabled for Apple Silicon; Linux pinentry commented out
+- `gpg.conf` uses `keys.openpgp.org` keyserver (SKS pool is defunct)
+- `scdaemon.conf` uses macOS PCSC framework driver with CCID disabled
 
-## Known Considerations
-- The bundled `yubico-piv-tool` v1.5.0 is very old; current is 2.x+. Prefer system-installed version via Homebrew.
-- Modern YubiKeys (5 series) support ECC (P-256, P-384) in addition to RSA.
-- The Slack `files.upload` API in `Yubikey-setup.sh` was deprecated March 2025; the upload functionality should be removed or replaced.
-- The SKS keyserver pool in `gpg.conf` is defunct; use `keys.openpgp.org` or `keyserver.ubuntu.com`.
-- `ykpersonalize` / `ykpers` are deprecated; use `ykman` (YubiKey Manager CLI) instead.
-- `yubikey-piv-manager` GUI is deprecated; use `YubiKey Manager` GUI or `ykman` CLI.
-- `brew cask install` syntax is now `brew install --cask`.
+## Completed Maintenance (Feb 2026)
+- Replaced defunct SKS keyserver pool with `keys.openpgp.org`
+- Removed deprecated `no-honor-keyserver-url` gpg option
+- Replaced GNU `getopt --long` in `scd-event` with portable arg parsing (macOS compatible)
+- Removed deprecated Slack `files.upload` API calls from `Yubikey-setup.sh`
+- Fixed broken line in `export-others-key.sh` (redirect on separate line)
+- Fixed sleep/message timing mismatches in reset scripts
+- Replaced deprecated `ykpersonalize`/`yubikey-piv-manager` references with `ykman`
+- Updated `brew cask install` to `brew install --cask`
+- Updated `ykman oath add` to `ykman oath accounts add` (subcommand renamed)
+- Removed all Intel Homebrew paths (`/usr/local/`); Apple Silicon only (`/opt/homebrew/`)
+- Removed MacGPG2 PATH additions from `scd-event` and `reload-gpg-agent.sh`
+- Removed hardcoded `brew --prefix gnupg` from `restart-gpg-agent.sh`
+- Activated pinentry-mac for Apple Silicon in `gpg-agent.conf`
+- Updated README to document full repo structure including `scripts/` and `piv/`
 
 ## Code Style
 - Shell scripts use `#!/bin/bash` or `#!/bin/sh`
