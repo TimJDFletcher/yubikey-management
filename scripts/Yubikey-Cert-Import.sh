@@ -4,8 +4,8 @@ if [ -z $1 ] ; then
     echo "$0 <certificate to import>"
 fi
 
-if ! which yubico-piv-tool > /dev/null ; then
-    TOOL_PATH=${_TOOL_PATH}/bin/
-    DYLD_FALLBACK_LIBRARY_PATH=${DYLD_FALLBACK_LIBRARY_PATH},${_TOOL_PATH}/lib/
+if ! command -v yubico-piv-tool > /dev/null ; then
+    echo "yubico-piv-tool not found. Install with: brew install yubico-piv-tool"
+    exit 1
 fi
-${TOOL_PATH}yubico-piv-tool -s ${VPN_SLOT} -a import-certificate < $1
+yubico-piv-tool -s ${VPN_SLOT} -a import-certificate < $1

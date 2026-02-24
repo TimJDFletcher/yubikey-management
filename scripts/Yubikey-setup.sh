@@ -7,11 +7,6 @@ PUK_SIZE=$((PIN_SIZE+2))
 KEY_TYPE=RSA2048
 TMP_DIR=$(mktemp -d)
 
-# Use the binaries in the git repo if the user doesn't have yubico-piv-tool installed
-# Should allow this script to work on Linux assuming yubico-piv-tool is installed
-_TOOL_PATH=yubico-piv-tool/current
-_YKPERS_PATH=ykpers/current
-
 SSH_SLOT=9e
 SSH_CERT_NAME="/CN=ssh key/"
 SSH_VALID_DAYS=3650 # 10 years but doesnt matter for ssh
@@ -28,22 +23,12 @@ VPN_PIN_POLICY=once
 VPN_PUBKEY_PATH=${TMP_DIR}/vpn-pubkey-${LOGNAME}.pem
 VPN_CSR_PATH=${TMP_DIR}/vpn-csr-${LOGNAME}.pem
 
-############################
-#### Assemble variables ####
-############################
-if ! which yubico-piv-tool > /dev/null ; then
-    TOOL_PATH=${_TOOL_PATH}/bin/
-    DYLD_FALLBACK_LIBRARY_PATH=${DYLD_FALLBACK_LIBRARY_PATH},${_TOOL_PATH}/lib/
-fi
-if ! which ykpersonalize > /dev/null ; then
-    YKPERS_PATH=${_YKPERS_PATH}/bin/
-    DYLD_FALLBACK_LIBRARY_PATH=${DYLD_FALLBACK_LIBRARY_PATH},${_YKPERS_PATH}/lib/
+if ! command -v yubico-piv-tool > /dev/null ; then
+    echo "yubico-piv-tool not found. Install with: brew install yubico-piv-tool"
+    exit 1
 fi
 
-#################################################
-#### Make sure there is a yubikey plugged in ####
-#################################################
-if ! ${TOOL_PATH}yubico-piv-tool -a status > /dev/null ; then
+if ! yubico-piv-tool -a status > /dev/null ; then
     echo Yubikey not found, try reinserting the Yubikey
     exit 1
 fi
@@ -53,15 +38,15 @@ PIN=$(dd if=/dev/random bs=1 count=32 2>/dev/null | hexdump -v -e '/1 "%u"'|cut 
 PUK=$(dd if=/dev/random bs=1 count=32 2>/dev/null | hexdump -v -e '/1 "%u"'|cut -c1-${PUK_SIZE})
 
 # Set PIN and PUK, assumes default PIN and Mgmt key
-${TOOL_PATH}yubico-piv-tool -a change-pin -P 123456   -N ${PIN}
-${TOOL_PATH}yubico-piv-tool -a change-puk -P 12345678 -N ${PUK}
+yubico-piv-tool -a change-pin -P 123456   -N ${PIN}
+yubico-piv-tool -a change-puk -P 12345678 -N ${PUK}
 
 ############################
 #### SSH Key Generation ####
 ############################
 
 # Generates a new private key for SSH key
-${TOOL_PATH}yubico-piv-tool -s ${SSH_SLOT} -a generate --touch-policy=${SSH_TOUCH_POLICY} --pin-policy=${SSH_PIN_POLICY} --algorithm=${KEY_TYPE} -o ${SSH_PUBKEY_PATH}
+yubico-piv-tool -s ${SSH_SLOT} -a generate --touch-policy=${SSH_TOUCH_POLICY} --pin-policy=${SSH_PIN_POLICY} --algorithm=${KEY_TYPE} -o ${SSH_PUBKEY_PATH}
 
 # Prompt user to press button if touch is enforced
 if [ x${SSH_TOUCH_POLICY} != xnever ] ; then
@@ -69,8 +54,8 @@ if [ x${SSH_TOUCH_POLICY} != xnever ] ; then
 fi
 
 # Generate and import self signed cert for SSH slot
-${TOOL_PATH}yubico-piv-tool -a verify-pin -a selfsign-certificate -P ${PIN} -s ${SSH_SLOT} -S "${SSH_CERT_NAME}" --valid-days=${SSH_VALID_DAYS} -i ${SSH_PUBKEY_PATH} -o ${SSH_CERT_PATH} 
-${TOOL_PATH}yubico-piv-tool -a import-certificate -s ${SSH_SLOT} -i ${SSH_CERT_PATH}
+yubico-piv-tool -a verify-pin -a selfsign-certificate -P ${PIN} -s ${SSH_SLOT} -S "${SSH_CERT_NAME}" --valid-days=${SSH_VALID_DAYS} -i ${SSH_PUBKEY_PATH} -o ${SSH_CERT_PATH}
+yubico-piv-tool -a import-certificate -s ${SSH_SLOT} -i ${SSH_CERT_PATH}
 
 # Convert PEM public key to ssh format
 SSH_PUB_KEY=$(ssh-keygen -i -m PKCS8 -f ${SSH_PUBKEY_PATH})
@@ -80,7 +65,7 @@ SSH_PUB_KEY=$(ssh-keygen -i -m PKCS8 -f ${SSH_PUBKEY_PATH})
 ############################
 
 # Generates a new private key for VPN slot
-${TOOL_PATH}yubico-piv-tool -s ${VPN_SLOT} -a generate --touch-policy=${VPN_TOUCH_POLICY} --pin-policy=${VPN_PIN_POLICY} --algorithm=${KEY_TYPE} -o ${VPN_PUBKEY_PATH}
+yubico-piv-tool -s ${VPN_SLOT} -a generate --touch-policy=${VPN_TOUCH_POLICY} --pin-policy=${VPN_PIN_POLICY} --algorithm=${KEY_TYPE} -o ${VPN_PUBKEY_PATH}
 
 # Prompt user to press button if touch is always enforced
 if [ x${VPN_TOUCH_POLICY} = xalways ] ; then
@@ -88,7 +73,7 @@ if [ x${VPN_TOUCH_POLICY} = xalways ] ; then
 fi
 
 # Generate CSR for the VPN slot
-${TOOL_PATH}yubico-piv-tool -a verify-pin -a request -P ${PIN} -s ${VPN_SLOT} -S "${VPN_CERT_NAME}" --valid-days=$VPN_VALID_DAYS -i ${VPN_PUBKEY_PATH} -o ${VPN_CSR_PATH}
+yubico-piv-tool -a verify-pin -a request -P ${PIN} -s ${VPN_SLOT} -S "${VPN_CERT_NAME}" --valid-days=$VPN_VALID_DAYS -i ${VPN_PUBKEY_PATH} -o ${VPN_CSR_PATH}
 
 ######################################
 #### Output public halves of keys ####

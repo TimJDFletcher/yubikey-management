@@ -13,9 +13,8 @@ For detailed setup instructions (GPG key generation, SSH, git signing, U2F, TOTP
   * `scdaemon.conf` - Configuration for the smart card daemon
 * `git/` - Configuration examples for git
   * `gitconfig` - Example of system-wide git config that signs all commits by default
-* `piv/` - PIV (Personal Identity Verification) tools and documentation
+* `piv/` - PIV (Personal Identity Verification) documentation
   * `README.md` - PIV-specific setup instructions using OpenSC
-  * `yubico-piv-tool/` - Bundled yubico-piv-tool binary (macOS)
 * `scripts/` - Utility scripts
   * `Yubikey-setup.sh` - Full PIV provisioning: generates SSH key (slot 9e) and VPN key (slot 9a), sets random PIN/PUK
   * `Yubikey-piv-reset.sh` - Factory resets the PIV applet on a YubiKey (destructive)

@@ -7,7 +7,7 @@ Covers GPG key generation (on-card), PIV-based SSH/VPN keys, git commit signing,
 ## Directory Structure
 - `gnupg/` - GnuPG configuration files (`gpg.conf`, `gpg-agent.conf`, `scdaemon.conf`, `scd-event`)
 - `git/` - Example gitconfig for commit signing
-- `piv/` - PIV-specific README and bundled `yubico-piv-tool` binary (macOS, v1.5.0 -- outdated)
+- `piv/` - PIV-specific README
 - `scripts/` - Utility shell scripts:
   - `Yubikey-setup.sh` - Full PIV setup (generates SSH + VPN keys, sets PIN/PUK)
   - `Yubikey-piv-reset.sh` - Factory resets the PIV applet
@@ -31,6 +31,8 @@ Covers GPG key generation (on-card), PIV-based SSH/VPN keys, git commit signing,
 - `gpg-agent.conf` has pinentry-mac enabled for Apple Silicon; Linux pinentry commented out
 - `gpg.conf` uses `keys.openpgp.org` keyserver (SKS pool is defunct)
 - `scdaemon.conf` uses macOS PCSC framework driver with CCID disabled
+- `yubico-piv-tool` must be installed via Homebrew; no bundled binary
+- All scripts require their tools to be in PATH
 
 ## Completed Maintenance (Feb 2026)
 - Replaced defunct SKS keyserver pool with `keys.openpgp.org`
@@ -47,6 +49,7 @@ Covers GPG key generation (on-card), PIV-based SSH/VPN keys, git commit signing,
 - Removed hardcoded `brew --prefix gnupg` from `restart-gpg-agent.sh`
 - Activated pinentry-mac for Apple Silicon in `gpg-agent.conf`
 - Updated README to document full repo structure including `scripts/` and `piv/`
+- Removed bundled yubico-piv-tool v1.5.0 binary; scripts now require it in PATH
 
 ## Code Style
 - Shell scripts use `#!/bin/bash` or `#!/bin/sh`
