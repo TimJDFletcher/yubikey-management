@@ -20,8 +20,8 @@ if ! ${TOOL_PATH}yubico-piv-tool -a status > /dev/null ; then
     echo Yubikey not found, try reinserting the Yubikey
     exit 1
 else
-    echo hard resting Yubikey in 5 seconds
-    sleep 8
+    echo hard resetting Yubikey in 5 seconds
+    sleep 5
 fi
 
 while [ $PIN_COUNT -le $LOCK_COUNT ] ; do 

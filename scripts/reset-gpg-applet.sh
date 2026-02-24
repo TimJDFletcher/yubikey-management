@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "Hard resetting GPG applet on Yubikey in 5 seconds"
 echo "Press ctrl+C to abort"
-sleep 7
+sleep 5
 
 cat << EOF | gpg-connect-agent
 /hex

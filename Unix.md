@@ -1,4 +1,4 @@
-The instructions have been tested on macOS 10.13 (High Sierra) with a YubiKey 4, but they should work on any Unix like system.
+The instructions have been tested on macOS with YubiKey 4 and YubiKey 5 series, but they should work on any Unix-like system.
 
 To perform these instructions, the YubiKey should be plugged into a USB port.
 
@@ -8,9 +8,9 @@ To perform these instructions, the YubiKey should be plugged into a USB port.
 
    ```bash
    # For macOS
-   brew install gnupg pinentry-mac
+   brew install gnupg pinentry-mac ykman
    # For Ubuntu
-   sudo apt-get install gnupg2
+   sudo apt-get install gnupg2 scdaemon yubikey-manager
    ```
 
 1. Configure GPG, there are a number of moving parts to GPG with a yubikey. The parts that need to be configured are are gpg, gpg-agent and scdaemon. The config for these are stored in `$HOME/.gnupg/`, there are examples of the config in this repo.
@@ -163,7 +163,7 @@ To perform these instructions, the YubiKey should be plugged into a USB port.
 
    While you're here:
    ```
-cc
+   gpg/card> name
    Cardholder's surname: [Your last name]
    Cardholder's given name: [Your first name]
    [Enter your admin PIN]
@@ -216,7 +216,7 @@ export SSH_AUTH_SOCK=$GPG_AGENT_SOCK
 
 1. Disable openssh-agent from loading if needed:
 
-   - **macOS users** You might need to disable sshigent `sudo launchctl unload -w /System/Library/LaunchAgents/com.openssh.ssh-agent.plist`
+   - **macOS users** You may need to disable the system ssh-agent. On older macOS: `sudo launchctl unload -w /System/Library/LaunchAgents/com.openssh.ssh-agent.plist`. On modern macOS (Ventura+), the system ssh-agent is managed differently -- setting `SSH_AUTH_SOCK` to the GPG agent socket (as shown above) is usually sufficient.
    - **Linux users** You may need to disable the password / ssh management agent on your desktop, for gnome follow [these instructions](https://wiki.archlinux.org/index.php/GNOME/Keyring#Disable_keyring_daemon_components)  
 
 1. Import your SSH key into GitLab/Hub/Tea
@@ -261,12 +261,10 @@ Yubico has [instructions](https://www.yubico.com/about/background/fido/) or a [v
 ### Install Yubikey management software
 
 ```bash
-# For OSX
-brew install python3 swig ykpers libu2f-host libusb yubico-piv-tool
-pip install yubikey-manager
+# For macOS
+brew install ykman yubico-piv-tool
 # For Ubuntu
-sudo apt-get install python python-pip yubikey-personalization yubico-piv-tool
-pip install yubikey-manager
+sudo apt-get install yubikey-manager yubico-piv-tool
 ```
 
 ### Set up your YubiKey for TOTP - a Google Authenticator replacement
@@ -285,23 +283,25 @@ You can also use both a phone based app and a YubiKey, knowing that either devic
 1. Copy the key below - don't forget to remove the spaces
 
     ```bash
-    % The `-t` will require a touch in order for codes to be generated.
-    % This prevent malware from generating codes without your knowledge.
-    % The YubiKey Neo does not support this feature. Just remove the `-t` flag.
-    > ykman oath add -t <SERVICE_NAME> <32 DIGIT BASE32 KEY NO SPACES>
-    > ykman oath code <SERVICE_NAME>
+    # The `-t` flag requires a touch for codes to be generated,
+    # preventing malware from generating codes without your knowledge.
+    ykman oath accounts add -t <SERVICE_NAME> <BASE32_KEY_NO_SPACES>
+    ykman oath accounts code <SERVICE_NAME>
     Touch your YubiKey...
     SERVICE_NAME 693720
     ```
 
 ### YubiKey and Personal Identity Verification (PIV)
 
-Yubico has a tool called yubikey-piv-manager that can help set up your YubiKey for PIV. While I have a preference for command-line tools, the GUI sets everything up in one click and saves significant hassle.
+Yubico provides YubiKey Manager (`ykman`) for managing PIV. You can use the CLI or install the GUI application.
 
-1. Install YubiKey PIV Manager
+1. Install YubiKey Manager
 
     ```bash
-    > brew cask install yubikey-piv-manager
+    # CLI (if not already installed)
+    brew install ykman
+    # GUI
+    brew install --cask yubico-yubikey-manager
     ```
 
 2. Navigate to `Setup for macOS` and click `yes`.
@@ -321,13 +321,13 @@ Yubico has a tool called yubikey-piv-manager that can help set up your YubiKey f
     The next time you login with your YubiKey inserted, macOS should prompt you for your PIN and not a password.
 
 
-## YubiKey for OSX login
+## YubiKey for macOS login
 
 Once you have PIV credentials on your YubiKey, macOS should prompt you if you want to use it for login.
 
 Note this will change the password for your keychain to match the PIN on your yubikey.
 
-To remove your yubikey for login follow [these instrutions](https://www.yubico.com/support/knowledge-base/categories/articles/unpair-yubikey-piv-login-macos-sierra/)
+To remove your YubiKey for login follow the [Yubico unpairing instructions](https://support.yubico.com/hc/en-us/articles/360016649039).
 
 ### Resetting your YubiKey
 

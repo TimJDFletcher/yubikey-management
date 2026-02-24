@@ -49,20 +49,19 @@
 
     From the root of this repo: `./Yubikey-change-pin.sh`
 
-### Disable characters being typed by the yubikey when you touch it ( = disable OTP mode) ###
+### Disable characters being typed by the yubikey when you touch it (disable OTP mode) ###
 
-    1. Get the ykpersonalization toolkit from here: https://developers.yubico.com/yubikey-personalization/Releases/
-    2. execute 'ykpersonalize -m 5'
-    confirm 2x that you want to proceed
-    3. remove yubikey from usb slot, and insert it again
-    4. done, you can now touch it without it posting random characters on slack!
+    1. Install YubiKey Manager if not already installed: `brew install ykman`
+    2. Run `ykman config usb --disable OTP` and confirm
+    3. Remove YubiKey from USB slot and reinsert it
+    4. Done, you can now touch it without it posting random characters
 
 ### When you have issues ###
 
     * Homebrew users can install the Yubico PIV tool with `brew install yubico-piv-tool`
     * Then run `yubico-piv-tool -a verify-pin` to verify the pin and possibly reset it with `yubico-piv-tool -a unblock-pin` using the PUK code
 
-### Futher Reading ###
+### Further Reading ###
 
     * Very useful Gitbook about the Yubikey covering much more than just PIV: https://ruimarinho.gitbooks.io/yubikey-handbook/
 

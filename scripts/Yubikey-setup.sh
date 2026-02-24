@@ -94,28 +94,11 @@ ${TOOL_PATH}yubico-piv-tool -a verify-pin -a request -P ${PIN} -s ${VPN_SLOT} -S
 #### Output public halves of keys ####
 ######################################
 
-# Upload CSR and SSH public key to slack with curl
-curl -s \
-    -F file=@${VPN_CSR_PATH} \
-    -F channels="${SLACK_CHANNELS}" \
-    -F filename=vpn-csr-${LOGNAME}.pem \
-    -F title="OpenVPN CSR for ${LOGNAME}" \
-    -F token=${SLACK_TOKEN} \
-    https://slack.com/api/files.upload > /dev/null
-
-curl -s \
-    -F content="${SSH_PUB_KEY} ${LOGNAME}" \
-    -F channels="${SLACK_CHANNELS}" \
-    -F filename=ssh-pubkey-${LOGNAME}.pub \
-    -F title="OpenSSH public key for ${LOGNAME}" \
-    -F token=${SLACK_TOKEN} \
-    https://slack.com/api/files.upload > /dev/null
-
 # Outputs the public key in SSH format
-echo "Your new SSH public key is printed below, please add it to your jumpcloud account here: https://console.jumpcloud.com/userconsole/"
+echo "Your new SSH public key:"
 echo "${SSH_PUB_KEY} ${LOGNAME}"
+echo ""
 echo "Your VPN CSR is saved here: ${VPN_CSR_PATH}"
-echo "Your VPN CSR and SSH public key have been sent to the Slack channel ${SLACK_CHANNELS}"
 
 echo "PIN is ${PIN}"
 echo "Your PIN Unlock Key (PUK) is: ${PUK}"

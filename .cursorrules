@@ -1,0 +1,44 @@
+# YubiKey Management Tools - Agent Context
+
+## Repository Purpose
+Collection of shell scripts, GnuPG configuration files, and documentation for managing YubiKeys.
+Covers GPG key generation (on-card), PIV-based SSH/VPN keys, git commit signing, U2F/FIDO2, and TOTP.
+
+## Directory Structure
+- `gnupg/` - GnuPG configuration files (`gpg.conf`, `gpg-agent.conf`, `scdaemon.conf`, `scd-event`)
+- `git/` - Example gitconfig for commit signing
+- `piv/` - PIV-specific README and bundled `yubico-piv-tool` binary (macOS, v1.5.0 -- outdated)
+- `scripts/` - Utility shell scripts:
+  - `Yubikey-setup.sh` - Full PIV setup (generates SSH + VPN keys, sets PIN/PUK)
+  - `Yubikey-piv-reset.sh` - Factory resets the PIV applet
+  - `Yubikey-Cert-Import.sh` - Imports a signed VPN certificate
+  - `Yubikey-change-pin.sh` - Changes PIV PIN
+  - `export-my-key.sh` / `export-others-key.sh` - Export GPG/SSH public keys
+  - `print-key-id.sh` - Prints GPG key ID from connected YubiKey
+  - `reload-gpg-agent.sh` / `restart-gpg-agent.sh` - Agent management
+  - `reset-gpg-applet.sh` - Hard resets the OpenPGP applet (destructive)
+- `README.md` - Top-level overview
+- `Unix.md` - Detailed setup guide (GPG keys, SSH, git signing, U2F, TOTP, PIV)
+- `piv/README.md` - PIV-specific setup with OpenSC
+
+## Key Technical Details
+- PIV scripts use `yubico-piv-tool` CLI; GPG scripts use `gpg`, `gpg-connect-agent`, `scdaemon`
+- PIV slots: 9a (VPN/authentication), 9e (SSH/card auth)
+- GPG SSH support works via `gpg-agent` with `enable-ssh-support`
+- Scripts assume macOS primarily; some Linux support (Ubuntu/Debian)
+- Apple Silicon Homebrew path: `/opt/homebrew/bin/`; Intel: `/usr/local/bin/`
+- `scd-event` is called by scdaemon on YubiKey insert/removal events
+
+## Known Considerations
+- The bundled `yubico-piv-tool` v1.5.0 is very old; current is 2.x+. Prefer system-installed version via Homebrew.
+- Modern YubiKeys (5 series) support ECC (P-256, P-384) in addition to RSA.
+- The Slack `files.upload` API in `Yubikey-setup.sh` was deprecated March 2025; the upload functionality should be removed or replaced.
+- The SKS keyserver pool in `gpg.conf` is defunct; use `keys.openpgp.org` or `keyserver.ubuntu.com`.
+- `ykpersonalize` / `ykpers` are deprecated; use `ykman` (YubiKey Manager CLI) instead.
+- `yubikey-piv-manager` GUI is deprecated; use `YubiKey Manager` GUI or `ykman` CLI.
+- `brew cask install` syntax is now `brew install --cask`.
+
+## Code Style
+- Shell scripts use `#!/bin/bash` or `#!/bin/sh`
+- No formal test suite
+- Documentation is in Markdown

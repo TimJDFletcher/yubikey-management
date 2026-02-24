@@ -20,8 +20,7 @@ gpg --batch --export --armor --output $username/pubkey-${yk_serial}.asc $(gpg --
 #Export public key as binary blob
 gpg --batch --export $(gpg --batch --card-status | grep "^General key info" | cut -d " " -f 6 | cut -d "/" -f 2) > $username/pubkey-${yk_serial}.pgp.bin
 #Export pubkey as base64 encoded binary
-#gpg --batch --export $(gpg --batch --card-status | grep "^General key info" | cut -d " " -f 6 | cut -d "/" -f 2) | base64 -w 0 >
-$username/pubkey-${yk_serial}.pgp.bin.base64
+#gpg --batch --export $(gpg --batch --card-status | grep "^General key info" | cut -d " " -f 6 | cut -d "/" -f 2) | base64 -w 0 > $username/pubkey-${yk_serial}.pgp.bin.base64
 
 # Export the public ssh key, assumes working gpg-agent
 ssh-add -L | grep "${yk_serial}"$ > $username/ssh-key-${yk_serial}.pub
